@@ -1,26 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, TextField, Button, Typography, Card, CardContent } from "@mui/material";
-import { getChatResponseAction, processFileAction } from "../state/chat/Action";
+import { Box, TextField, Button, Typography,Card, CardContent } from "@mui/material";
+import { generateReportAction } from "../state/chat/Action";
 
 const ChatComponent = () => {
-  const [message, setMessage] = useState("");
+  const [report, setReport] = useState("");
   const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.chat);
 
-  const handleChatSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (message.trim()) {
-      dispatch(getChatResponseAction(message));
-      setMessage("");
-    }
-  };
-
-  const handleFileSubmit = (e) => {
-    e.preventDefault();
-    if (file) {
-      dispatch(processFileAction(file));
+    if (report.trim()) {
+      dispatch(generateReportAction(report, file));
+      setReport("");
       setFile(null);
     }
   };
@@ -28,43 +21,35 @@ const ChatComponent = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Chat Assistant
+        Report Generator
       </Typography>
       <Card sx={{ width: "100%", maxWidth: 600, marginBottom: 4 }}>
         <CardContent>
-          <form onSubmit={handleChatSubmit}>
+          <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
               variant="outlined"
-              label="Type your message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              label="Type your report..."
+              value={report}
+              onChange={(e) => setReport(e.target.value)}
               disabled={loading}
+              multiline
+              rows={4}
             />
-            <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
-              <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                {loading ? "Sending..." : "Send"}
-              </Button>
-            </Box>
-          </form>
-        </CardContent>
-      </Card>
-      <Card sx={{ width: "100%", maxWidth: 600 }}>
-        <CardContent>
-          <form onSubmit={handleFileSubmit}>
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              style={{ marginBottom: 16 }}
+              style={{ marginTop: 16, marginBottom: 16 }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button type="submit" variant="contained" color="secondary" disabled={loading}>
-                {loading ? "Uploading..." : "Upload File"}
+              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                {loading ? "Processing..." : "Generate Report"}
               </Button>
             </Box>
           </form>
         </CardContent>
       </Card>
+
       {data && (
         <Card sx={{ width: "100%", maxWidth: 600, marginTop: 4 }}>
           <CardContent>
